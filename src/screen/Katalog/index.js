@@ -1,4 +1,3 @@
-
 import SearchBar from '../../../components/SearchBar';
 import Slider from '../../../components/Slider';
 import Category from '../../../components/Category';
@@ -11,8 +10,8 @@ import Slider4 from '../../assets/images/SLIDER4.jpeg';
 import { Rank } from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import { ScrollView, StyleSheet, Text, View,Image,TouchableOpacity } from 'react-native'
-import React from 'react'
+import { ScrollView, StyleSheet, Text, View,Image,TouchableOpacity, Animated } from 'react-native'
+import React, {useRef} from 'react'
 import { TextBold } from 'iconsax-react';
 
 const Katalog = () => {
@@ -20,15 +19,33 @@ const Katalog = () => {
   const handleNavigateToDetail = () => {
     navigation.navigate('Detail');
   };
-
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const diffClampY = Animated.diffClamp(scrollY, 0, 142);
+  const recentY = diffClampY.interpolate({
+      inputRange: [0, 142],
+      outputRange: [0, -142],
+      extrapolate: 'clamp',
+    });
     return (
-      <ScrollView>
-        
+      <Animated.ScrollView
+      showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {y: scrollY}}}],
+          {useNativeDriver: true},
+        )}
+        contentContainerStyle={{paddingTop: 142}}>
+
            <View style={styles.container}>
-            <SearchBar/>
-            <View>
+           
+            <Animated.View style={{flexDirection: 'column',backgroundColor: 'white',flex:1, padding: 40,paddingHorizontal: 150,transform: [{translateY: recentY}]}}>
+            
         <Text style={header.Text}>Katalog</Text>
+        <View>
+        
         </View>
+        
+        </Animated.View>
+        <SearchBar/>
                  <View style={itemList.container}>
                   
                   <TouchableOpacity  onPress={handleNavigateToDetail}>
@@ -196,7 +213,7 @@ const Katalog = () => {
                  
                  </View>
            </View>
-      </ScrollView>
+      </Animated.ScrollView>
      
     );
   };
@@ -207,7 +224,12 @@ const Katalog = () => {
       justifyContent: 'center',
       alignItems: 'center',
       flexDirection: 'column',
-      backgroundColor: '#F5FCFF',
+      backgroundColor: '#FFFFFF',
+      zIndex: 999,
+      top: -139,
+      left: 0,
+      right: 0,
+      elevation: 1000,
     },
   })
 
@@ -215,9 +237,10 @@ const Katalog = () => {
     Text: {
       fontSize : 30,
       fontWeight : 'bold',
+      marginBottom : -100,
+      marginTop : -10,
     },
   })
-
 
   const itemList = StyleSheet.create({
     container: {
@@ -257,4 +280,3 @@ const Katalog = () => {
   })
 
 export default Katalog
-
