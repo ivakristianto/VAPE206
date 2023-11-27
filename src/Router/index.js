@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Bag2, Home2, Bookmark } from 'iconsax-react-native';
 import React from 'react'
-import { Home,Detail,Katalog, Bokkmark } from '../screen';
+import { Home,Detail,Katalog, Bokkmark, NoteWish, Cari } from '../screen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -64,6 +64,8 @@ const Router = () => {
     <Stack.Navigator initialRouteName="MainApp">
       <Stack.Screen name="MainApp" component={MainApp} options={{ headerShown: false }} />
       <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false }} />
+      <Stack.Screen name="notewish" component={NoteWish} options={{ headerShown: false }} />
+      <Stack.Screen name="cari" component={Cari} options={{ headerShown: false }} />
     </Stack.Navigator>
   )
 }

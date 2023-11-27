@@ -7,14 +7,17 @@ import Item from '../../../components/item';
 import Slider1 from '../../assets/images/SLIDER1.jpeg';
 import Slider2 from '../../assets/images/SLIDER2.jpeg';
 import Slider4 from '../../assets/images/SLIDER4.jpeg';
+import { useNavigation } from "@react-navigation/native";
 // import { Text } from 'iconsax-react';
 import { Rank } from 'iconsax-react-native';
 import { ShoppingCart } from 'iconsax-react-native';
 import { Bookmark } from 'iconsax-react-native';
+import { Note } from 'iconsax-react-native';
 import { ScrollView, StyleSheet, Text, View,Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Book, TextBold } from 'iconsax-react';
 const Bokkmark = () => {
+  const navigation = useNavigation();
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -94,7 +97,14 @@ const Bokkmark = () => {
           </TouchableOpacity>
           </View>
       </View>
+      <TouchableOpacity 
+      style={styles.noteIconContainer}
+      onPress={() => navigation.navigate("notewish")}
+      >
+        <Note size="50" color="#2ccce4" />
+      </TouchableOpacity>
     </ScrollView>
+    
   )
 }
 
@@ -109,6 +119,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     resizeMode: 'contain',
     marginRight: 10,
+  },
+  noteIconContainer: {
+    alignItems: 'flex-end',
+    marginTop: 20,
   },
   container: {
     flexDirection: 'column',
