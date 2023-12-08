@@ -2,6 +2,9 @@ import Home from "./Home";
 import Katalog from "./Katalog";
 import Detail from "./Detail";
 import Bokkmark from "./bookmark"
-import NoteWish from "./notewish";
+import Addnote from "./Addnote";
 import Cari from "./cari";
-export {Home, Katalog, Detail,Bokkmark,NoteWish,Cari}
+import Note from "./Note";
+import NoteDetail from "./NoteDetail";
+import Editnote from "./Editnote";
+export {Home, Katalog, Detail,Bokkmark,Addnote,Cari,Note,NoteDetail, Editnote}

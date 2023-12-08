@@ -7,14 +7,16 @@ import Item from '../../../components/item';
 import Slider1 from '../../assets/images/SLIDER1.jpeg';
 import Slider2 from '../../assets/images/SLIDER2.jpeg';
 import Slider4 from '../../assets/images/SLIDER4.jpeg';
-import { useNavigation } from "@react-navigation/native";
+import axios from 'axios';
 // import { Text } from 'iconsax-react';
 import { Rank } from 'iconsax-react-native';
 import { ShoppingCart } from 'iconsax-react-native';
 import { Bookmark } from 'iconsax-react-native';
 import { Note } from 'iconsax-react-native';
-import { ScrollView, StyleSheet, Text, View,Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import note from '../../../components/Cat'
+import { ScrollView, StyleSheet, Text, View,Image, TouchableOpacity,Animated,ActivityIndicator} from 'react-native'
+import { useNavigation,useFocusEffect } from "@react-navigation/native";
+import React, { useState,useRef,useCallback } from 'react';
 import { Book, TextBold } from 'iconsax-react';
 const Bokkmark = () => {
   const navigation = useNavigation();
@@ -99,7 +101,7 @@ const Bokkmark = () => {
       </View>
       <TouchableOpacity 
       style={styles.noteIconContainer}
-      onPress={() => navigation.navigate("notewish")}
+      onPress={() => navigation.navigate("Note")}
       >
         <Note size="50" color="#2ccce4" />
       </TouchableOpacity>
