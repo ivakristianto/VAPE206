@@ -2,7 +2,8 @@ import { StyleSheet, Text, View,Animated,TouchableOpacity,ActivityIndicator,Moda
 import React, {useState, useRef, useEffect} from 'react';
 import {ArrowLeft, Like1, Receipt21, Message, Share, More} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
-import axios from 'axios';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 const NoteDetail = ({route}) => {
   const {noteId} = route.params;
@@ -23,52 +24,49 @@ const NoteDetail = ({route}) => {
   };
 
   useEffect(() => {
-    getNoteById();
+    const subscriber = firestore()
+      .collection('note')
+      .doc(noteId)
+      .onSnapshot(documentSnapshot => {
+        const noteData = documentSnapshot.data();
+        if (noteData) {
+          console.log('Note data: ', noteData);
+          setSelectedNote(noteData);
+        } else {
+          console.log(`Note with ID ${noteId} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
   }, [noteId]);
 
-  const getNoteById = async () => {
-    try {
-      const response = await axios.get(
-        `https://6571b058d61ba6fcc01347bf.mockapi.io/vape206/note/${noteId}`
-      );
-  
-      if (response.status === 200) {
-        setSelectedNote(response.data);
-        setLoading(false);
-      } else {
-        console.error('Failed to fetch note. Unexpected status code:', response.status);
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error('Error fetching note by ID:', error.message);
-      setLoading(false);
-    }
-  };
   const navigateEdit = () => {
     closeActionSheet()
     navigation.navigate('Editnote', {noteId})
   }
   const handleDelete = async () => {
+    setLoading(true);
     try {
-      // Send a DELETE request to the API endpoint
-      const response = await axios.delete(
-        `https://6571b058d61ba6fcc01347bf.mockapi.io/vape206/note/${noteId}`
-      );
-  
-      if (response.status === 200) {
-        // Successfully deleted, navigate to the 'Note' screen
-        closeActionSheet();
-        navigation.navigate('Note');
-      } else {
-        console.error('Failed to delete note. Unexpected status code:', response.status);
-        // Handle the failure as needed
+      await firestore()
+        .collection('note')
+        .doc(noteId)
+        .delete()
+        .then(() => {
+          console.log('note deleted!');
+        });
+      if (selectedNote?.image) {
+        const imageRef = storage().refFromURL(selectedNote?.image);
+        await imageRef.delete();
       }
+      console.log('note deleted!');
+      closeActionSheet();
+      setSelectedNote(null);
+      setLoading(false)
+      navigation.navigate('Note');
     } catch (error) {
-      console.error('Error deleting note:', error.message);
-      // Handle the error as needed
+      console.error(error);
     }
   };
-  
 
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -139,7 +137,7 @@ const NoteDetail = ({route}) => {
       onRequestClose={() =>{
         setModalVisible(!modalVisible);
       }}>
-        <View style={{backgroundColor: 'white',position:'absolute', padding: 20,top: 50, paddingHorizontal: 40,borderRadius: 10,left: 260,paddingVertical: 20}}>
+        <View style={{backgroundColor: 'white',position:'absolute', padding: 20,top: 50, paddingHorizontal: 40,borderRadius: 10,left: 210,paddingVertical: 20}}>
         <TouchableOpacity
           style={{
             justifyContent: 'center',

@@ -1,41 +1,43 @@
 // Import React dan komponen-komponen React Native
 import { useNavigation } from "@react-navigation/native";
-import React, { useState } from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
+
 // Komponen utama aplikasi
 const Addnote = () => {
   const [loading, setLoading] = useState(false);
-        const [noteData, setnoteData] = useState({
-            judul: "",
-            deskripsi: "",
-        });
-        const handleUpload = async () => {
-            setLoading(true);
-            try {
-              await axios.post('https://6571b058d61ba6fcc01347bf.mockapi.io/vape206/note', {
-                  judul: noteData.judul,
-                  deskripsi: noteData.deskripsi,
-                })
-                .then(function (response) {
-                  console.log(response);
-                })
-                .catch(function (error) {
-                  console.log(error);
-                });
-              setLoading(false);
-              navigation.navigate('Note');
-            } catch (e) {
-              console.log(e);
-            }
-          };
-        const handleChange = (key, value) => {
-            setnoteData({
-            ...noteData,
-            [key]: value,
-            });
-        };
-        const navigation = useNavigation();
+  const [noteData, setNoteData] = useState({
+    judul: "",
+    deskripsi: "",
+  });
+
+  const handleUpload = async () => {
+    setLoading(true);
+
+    try {
+      await firestore().collection('note').add({
+        judul: noteData.judul,
+        deskripsi: noteData.deskripsi,
+      });
+
+      setLoading(false);
+      console.log('Note ditambahkan!');
+      navigation.navigate('Note');
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (key, value) => {
+    setNoteData({
+      ...noteData,
+      [key]: value,
+    });
+  };
+
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Judul Note:</Text>
@@ -58,7 +60,7 @@ const Addnote = () => {
         multiline
       />
 
-      <Button onPress={handleUpload} title="simpan"/>
+      <Button onPress={handleUpload} title="Simpan" />
     </View>
   );
 };
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
+    color: 'black',
   },
   input: {
     height: 40,
@@ -79,9 +82,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
     padding: 8,
+    color: 'black',
   },
-  multilineInput:{
-    height:300,
+  multilineInput: {
+    height: 300,
   },
 });
 

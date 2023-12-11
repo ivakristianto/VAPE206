@@ -1,11 +1,10 @@
 // NoteScreen.js
-import axios from 'axios';
 import { ScrollView, StyleSheet, Text, View,Image, TouchableOpacity,Animated,ActivityIndicator} from 'react-native'
 import { useNavigation,useFocusEffect } from "@react-navigation/native";
-import React, { useState,useRef,useCallback } from 'react';
+import React, { useState,useRef,useCallback,useEffect } from 'react';
 import { Add, Scroll } from 'iconsax-react-native';
 import Cat from '../../../components/Cat';
-
+import firestore from '@react-native-firebase/firestore';
 const Note = ( ) => {
     const navigation = useNavigation();
     const handleNavigateToNoteDetail = () => {
@@ -21,30 +20,40 @@ const Note = ( ) => {
     const [loading, setLoading] = useState(true);
     const [noteData, setNoteData] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const getDataNote = async () => {
-      try {
-        const response = await axios.get(
-          'https://6571b058d61ba6fcc01347bf.mockapi.io/vape206/note',
-        );
-        setNoteData(response.data);
-        setLoading(false)
-      } catch (error) {
-          console.error(error);
-      }
-    };
-    const onRefresh = useCallback(() => {
-      setRefreshing(true);
-      setTimeout(() => {
-        getDataNote()
-        setRefreshing(false);
-      }, 1500);
-    }, []);
-  
-    useFocusEffect(
-      useCallback(() => {
-        getDataNote();
-  },[])
-);
+  useEffect(( ) => {
+    const subscriber = firestore()
+      .collection('note')
+      .onSnapshot(querySnapshot => {
+        const note = [];
+        querySnapshot.forEach(documentSnapshot => {
+          note.push({
+            ...documentSnapshot.data(),
+            id: documentSnapshot.id,
+          });
+        });
+        setNoteData(note);
+        setLoading(false);
+      });
+    return () => subscriber();
+  }, []);
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      firestore()
+        .collection('note')
+        .onSnapshot(querySnapshot => {
+          const note = [];
+          querySnapshot.forEach(documentSnapshot => {
+            note.push({
+              ...documentSnapshot.data(),
+              id: documentSnapshot.id,
+            });
+          });
+          setNoteData(note);
+        });
+      setRefreshing(false);
+    }, 1500);
+},[]);
   return (
     <View>
         <ScrollView>
@@ -60,7 +69,7 @@ const Note = ( ) => {
       style={styles.noteIconContainer}
       onPress={() => navigation.navigate("Addnote")}
       >
-        <Add size="50" color="#2ccce4" />
+        <Add size="50" color='white' />
       </TouchableOpacity>
     </View>
   );
@@ -84,7 +93,11 @@ const styles = StyleSheet.create({
   },
   noteIconContainer: {
     alignItems: 'flex-end',
-    marginTop: 20,
+    marginTop: 600,
+    left:300,
+    position: 'absolute',
+    padding:6,
+    backgroundColor:"#2ccce4",
   },
 });
 
